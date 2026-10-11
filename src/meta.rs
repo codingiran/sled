@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use crate::*;
 
 /// A simple map that can be used to store metadata
@@ -36,7 +37,7 @@ impl Meta {
         self.inner
             .iter()
             .map(|(k, _pid)| {
-                k.len() as u64 + std::mem::size_of::<PageId>() as u64
+                k.len() as u64 + size_of::<PageId>() as u64
             })
             .sum()
     }

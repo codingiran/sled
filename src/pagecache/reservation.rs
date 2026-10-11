@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use crate::{pagecache::*, *};
 
 /// A pending log reservation which can be aborted or completed.
@@ -133,7 +134,7 @@ impl<'a> Reservation<'a> {
             std::ptr::copy_nonoverlapping(
                 crc32_arr.as_ptr(),
                 self.buf.as_mut_ptr(),
-                std::mem::size_of::<u32>(),
+                size_of::<u32>(),
             );
         }
         self.log.exit_reservation(&self.iobuf)?;

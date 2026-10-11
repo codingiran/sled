@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use std::{
     alloc::{alloc, dealloc, Layout},
     cell::UnsafeCell,
@@ -655,7 +656,7 @@ impl IoBufs {
                     crc32_arr.as_ptr(),
                     // the crc32 is the first part of the buffer
                     data.as_mut_ptr(),
-                    std::mem::size_of::<u32>(),
+                    size_of::<u32>(),
                 );
             }
         } else if maxed {

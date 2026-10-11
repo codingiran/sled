@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use std::fs::File;
 
 use super::{
@@ -587,12 +588,12 @@ impl Into<[u8; SEG_HEADER_LEN]> for SegmentHeader {
             std::ptr::copy_nonoverlapping(
                 lsn_arr.as_ptr(),
                 buf.as_mut_ptr().add(4),
-                std::mem::size_of::<u64>(),
+                size_of::<u64>(),
             );
             std::ptr::copy_nonoverlapping(
                 highest_stable_lsn_arr.as_ptr(),
                 buf.as_mut_ptr().add(12),
-                std::mem::size_of::<u64>(),
+                size_of::<u64>(),
             );
         }
 
@@ -603,7 +604,7 @@ impl Into<[u8; SEG_HEADER_LEN]> for SegmentHeader {
             std::ptr::copy_nonoverlapping(
                 crc32.as_ptr(),
                 buf.as_mut_ptr(),
-                std::mem::size_of::<u32>(),
+                size_of::<u32>(),
             );
         }
 
@@ -839,7 +840,7 @@ pub(crate) fn read_message<R: ReadAt>(
             Ok(LogRead::Inline(header, buf, inline_len))
         }
         MessageKind::BatchManifest => {
-            assert_eq!(buf.len(), std::mem::size_of::<Lsn>());
+            assert_eq!(buf.len(), size_of::<Lsn>());
             let max_lsn = arr_to_lsn(&buf);
             Ok(LogRead::BatchManifest(max_lsn, inline_len))
         }

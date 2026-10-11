@@ -6,7 +6,7 @@ use std::{
     alloc::{alloc, dealloc, Layout},
     convert::TryFrom,
     fmt::{self, Debug},
-    mem,
+    mem::{self, align_of, size_of},
     ops::Deref,
     ptr,
     sync::atomic::{AtomicUsize, Ordering},
@@ -45,10 +45,10 @@ impl<T> Arc<T> {
     // "Unsafe because the caller must either take ownership or bind `T: Copy`"
     unsafe fn copy_from_slice(s: &[T]) -> Arc<[T]> {
         let align =
-            std::cmp::max(mem::align_of::<T>(), mem::align_of::<AtomicUsize>());
+            std::cmp::max(align_of::<T>(), align_of::<AtomicUsize>());
 
-        let rc_width = std::cmp::max(align, mem::size_of::<AtomicUsize>());
-        let data_width = mem::size_of::<T>().checked_mul(s.len()).unwrap();
+        let rc_width = std::cmp::max(align, size_of::<AtomicUsize>());
+        let data_width = size_of::<T>().checked_mul(s.len()).unwrap();
 
         let size_unpadded = rc_width.checked_add(data_width).unwrap();
         // Pad size out to alignment
@@ -91,9 +91,9 @@ impl<T> Arc<T> {
 
     pub unsafe fn from_raw(ptr: *const T) -> Arc<T> {
         let align =
-            std::cmp::max(mem::align_of::<T>(), mem::align_of::<AtomicUsize>());
+            std::cmp::max(align_of::<T>(), align_of::<AtomicUsize>());
 
-        let rc_width = std::cmp::max(align, mem::size_of::<AtomicUsize>());
+        let rc_width = std::cmp::max(align, size_of::<AtomicUsize>());
 
         let sub_ptr = (ptr as *const u8).sub(rc_width) as *mut ArcInner<T>;
 
@@ -176,9 +176,9 @@ impl<T> From<Box<[T]>> for Arc<[T]> {
             let value_layout = Layout::for_value(&*src);
             let align = std::cmp::max(
                 value_layout.align(),
-                mem::align_of::<AtomicUsize>(),
+                align_of::<AtomicUsize>(),
             );
-            let rc_width = std::cmp::max(align, mem::size_of::<AtomicUsize>());
+            let rc_width = std::cmp::max(align, size_of::<AtomicUsize>());
             let unpadded_size =
                 rc_width.checked_add(value_layout.size()).unwrap();
             // pad the total `Arc` allocation size to the alignment of

@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use crate::pagecache::*;
 use crate::*;
 
@@ -14,7 +15,7 @@ pub(crate) fn read_blob(
 
     let mut f = f_res?;
 
-    let mut crc_expected_bytes = [0_u8; std::mem::size_of::<u32>()];
+    let mut crc_expected_bytes = [0_u8; size_of::<u32>()];
 
     if let Err(e) = f.read_exact(&mut crc_expected_bytes) {
         debug!(

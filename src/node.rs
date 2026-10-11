@@ -1,3 +1,4 @@
+use std::mem::size_of;
 use std::{num::NonZeroU64, ops::Bound};
 
 use super::*;
@@ -39,7 +40,7 @@ impl Node {
     }
 
     pub(crate) fn rss(&self) -> u64 {
-        std::mem::size_of::<Node>() as u64
+        size_of::<Node>() as u64
             + self.lo.len() as u64
             + self.hi.len() as u64
             + self.data.rss()

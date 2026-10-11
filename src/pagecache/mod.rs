@@ -21,7 +21,7 @@ mod reservation;
 mod segment;
 mod snapshot;
 
-use std::{collections::BinaryHeap, ops::Deref};
+use std::{collections::BinaryHeap, mem::size_of, ops::Deref};
 
 use crate::*;
 
@@ -1432,7 +1432,7 @@ impl PageCache {
     fn logical_size_of_all_pages(&self) -> Result<u64> {
         let guard = pin();
         let meta_size = self.get_meta(&guard)?.rss();
-        let idgen_size = std::mem::size_of::<u64>() as u64;
+        let idgen_size = size_of::<u64>() as u64;
 
         let mut ret = meta_size + idgen_size;
         let min_pid = COUNTER_PID + 1;
